@@ -1,10 +1,36 @@
-"""Модуль работы с текстами"""
+"""
+Пакет для работы с текстами.
+
+Классы:
+------
+
+`YearFilter`
+    Фильтр по годам
+`Text` 
+    Текст
+`Corpus` 
+    Корпус
+
+Функции:
+-------
+`delta()`
+
+Модули:
+-------
+`exceptions`
+    Мокуль исключений
+
+Пакеты:
+------
+`statistic`
+    Пакет работы со статистикой
+"""
 
 from __future__ import annotations
 import os
 import re
 from .exceptions import *
-from .statistics import TextStatistic, CorpusStatistic
+from .statistics import Statistic, Analyzer#, TextStatistic, CorpusStatistic
 from progress.bar import IncrementalBar
 
 
@@ -13,38 +39,37 @@ class YearFilter:
     Фильтр по годам
 
     Атрибуты
-    --------
-    min_year : int
+    ========
+    min_year : `int`
         Год начала отрезка
-    max_year : int
+    max_year : `int`
         Год конца отрезка
     
     Примеры
-    -------
-    Создать фильтр с 1812 по 1813 год::
-
-        YearFilter(1812, 1813)
-    
+    =======
     ::
 
-        YearFilter(min_year=1812, max_year=1813)
-    
+        some_filter = YearFilter(1812, 1813)
+        some_filter = YearFilter(min_year=1812, max_year=1813)
     """
 
     def __init__(self, min_year: int, max_year: int) -> None:
         """
-        Создаёт фильтр по годам, начиная с min_year включитльно по max_year включительно
+        Создаёт фильтр по годам с min_year включитльно по max_year включительно
 
         Параметры
         ---------
-        min_year : int
+        min_year : `int`
             Год начала отрезка
-        max_year : int 
+        max_year : `int`
             Год конца отрезка
         
-        Возвращаемое значение
-        ---------------------
-        None
+        Примеры
+        -------
+        ::
+
+            YearFilter(1812, 1813)
+            YearFilter(min_year=1812, max_year=1813)
         """
 
         if not isinstance(min_year, int) or not isinstance(max_year, int):
@@ -57,69 +82,51 @@ class YearFilter:
 class Text:
     """
     Текст
-    
+
     Атрибуты
-    --------
-    name : str
+    ========
+    name : `str`
         Название текста
-    steps : int 
+    steps : `int` 
         Количество стоп в тексте
-    statistic : TextStatistic
+    statistic : `TextStatistic`
         Статистика текста
-    year : int
+    year : `int`
         Год текста
-    text : str
+    text : `str`
         Текст
-    
+
     Примеры
-    -------
-    Создать 4-х стопный текст 1817 года с имненем "Дубия"::
-
-        text_1 = Text('Dubia.txt', 4, 'Дубия', 1817)
-    
+    =======
+    Создание:
+    --------
     ::
 
-        text_2 = Text(path='Dubia.txt', steps=4, name='Дубия', year=1817)
-    
-    Создать 4-х стопный текст 1857 года с именем "Прибой"::
-    
-        text_1 = Text('F_1857_16_Прибой.txt', 4)
-    
-    ::
-        
-        text_2 = Text(path='F_1857_16_Прибой.txt', steps=4)
-    
-    Получить статистику текста::
+        some_text = Text('Dubia.txt', 4, 'Дубия', 1817)
+        some_text = Text('F_1857_16_Прибой.txt', 4)
 
-        text_1.statistic
-
-    Получить исходный текст::
-
-        text_1.text
-
-    Получить количество стоп текста::
-
-        text_1.steps
-
-    Получить год текста::
-
-        text_1.year
-
+    Доступ к атрибутам:
+    -------------------
+    >>> some_text.statistic
+    >>> some_text.text
+    >>> some_text.steps
+    >>> some_text.year
+    >>> sone_text.name
     """
 
     def __init__(self, path: str, steps: int, name: str | None = None, year: int | None =  None) -> None:
         """
-        Создает новый текст
+        Создает новый текст из файла по пути path.
 
         Параметры
         ---------
-        path : str
+        path : `str`
             Путь к файлу с текстом
-        steps : int
+        steps : `int`
             Количество стоп в тексте
-        name : str, optional
+        name : `str` ``(Опционально)``
             Название текста. Если оно не передано, название берётся из имени файла.
-        year : int, optional
+        year : `int` ``(Опционально)``
             Год текста. Если он не передан, год берётся из названия файла.
         
         !!!!!Важно!!!!!
@@ -130,22 +137,12 @@ class Text:
         
         Примеры
         -------
-        Создать 4-х стопный текст 1817 года с имненем "Дубия"::
+        ::
 
             Text('Dubia.txt', 4, 'Дубия', 1817)
-
-        ::
-
             Text(path='Dubia.txt', steps=4, name='Дубия', year=1817)
-
-        Создать 4-х стопный текст 1857 года с именем "Прибой"::
-        
             Text('F_1857_16_Прибой.txt', 4)
-
-        ::
-
             Text(path='F_1857_16_Прибой.txt', steps=4)
-
         """
         
         file_name = os.path.split(path)[-1]
@@ -176,7 +173,7 @@ class Text:
             self.__text: str = file.read().strip('\n').strip(' ')
 
         #Создается статистика текста
-        self.__statistic = TextStatistic(text=self.text, steps=steps)
+        self.__statistic = Analyzer.text(text=self.text, steps=steps)
 
     @property
     def name(self) -> str:
@@ -189,8 +186,9 @@ class Text:
         return self.__year
 
     @property
-    def statistic(self) -> TextStatistic:
-        """Статистика текста"""
+    def statistic(self) -> Statistic:
+        """
+        Статистика текста"""
         return self.__statistic
 
     @property
@@ -236,53 +234,118 @@ class Corpus:
     Корпус текстов
     
     Атрибуты
-    --------
-    steps : int 
+    ========
+    steps : `int`
         Количество стоп в текстах корпуса
-    statistic : CorpusStatistic
+    statistic : `CorpusStatistic`
         Статистика корпуса текстов
-    texts : list[Text]
-        Список текстов в корпусе
+    texts : `list of Text`
+        Тексты корпуса
 
     Методы
-    ------
-    add_text(text: Text):
-        Добавляет текст в корпус
-    load_texts_from_directory(directory_path, year_filter):
-        Добавляет либо все тексты из папки, либо тексты с фильтром по годам
-    add_texts_from_other_corpus_with_filter(corpus, year_filter)
-        Добавяет тексты из другого корпуса с фильтром по годам
-    create_new_with_filter(corpus, year_filter)
-        Создаёт корупус из текстов другого корпуса с фильтром по годам
+    ======
+    Добавляет текст в корпус::
+
+        add_text(text)
+
+    Добавляет тексты из папки с возможностью фильтрации по годам::
+
+        load_texts_from_directory(directory_path, year_filter)
+
+    Добавяет тексты из другого корпуса с фильтром по годам::
+
+        add_texts_with_filter(corpus, year_filter)
+
+    Создаёт корупус из текстов другого корпуса с фильтром по годам::
+
+        #Метод класса
+        create_new_with_filter(corpus, year_filter)
+    
+    !!!!!Важно!!!!!
+    ===============
+    При использовании текста в нескольких местах кода, используйте следующие методы для повышения эффективности::
+    
+        add_text(text)
+        add_texts_with_filter(corpus, year_filter)
+        create_with_filter(corpus, year_filter)
+        text_1 + text_2 + ...
     
     Примеры
-    -------
-    Создать корпус объединением нескольких текстов::
+    =======
+    Создание:
+    ---------
+    ::
 
         some_corpus = text_1 + text_2
-
-    Создать корпус 
+        some_corpus = Corpus(4)
+        some_corpus = Corpus.create_with_filter(some_corpus_2, year_filter)
     
-    Добавить текст в существующий корпус
+    Доступ к атрибутам:
+    --------------------
+    >>> some_corpus.statistic
+    >>> some_corpus.texts
+    >>> some_corpus.steps
+    
+    Итерирование по текстам:
+    -------------------------
+    ::
 
-    * some_corpus.add_text(text)
+        for text in some_corpus:
+            #Действия с текстами
+    
+    Добавление текстов в корпус:
+    ---------------------------
+    Один текст::
+        
+        some_corpus += text
+        #Или:
+        some_corpus.add_text(text)
+        
+    Тексты из другого корпуса::
+
+        some_corpus += other_corpus
+        #С фильтром:
+        year_filter = YearFilter(1845, 1859)
+        some_corpus.add_texts_with_filter(other_corpus, year_filter)
+
+    Загрузить из папки::
+    
+        some_corpus.load_texts_from_directory('Фет')
+        #С фильтром:
+        year_filter = YearFilter(1845, 1859)
+        some_corpus.load_texts_from_directory('Фет', year_filter)
     """
 
     def __init__(self, steps: int) -> None:
+        """
+        Создает корпус с количеством стоп steps.
+        
+        Параметры
+        --------
+        steps : `int`
+            Количество стоп для текстов корпуса.
+        
+        Примеры:
+        --------
+        ::
+
+            Corpus(4)
+            Corpus(steps=4)
+        """
         self.texts: list[Text] = []
         self.__steps: int = steps
         self.__changed: bool = True
-        self.__statistic: CorpusStatistic | None = None
+        self.__statistic: Statistic | None = None
 
     @property
-    def statistic(self) -> CorpusStatistic:
+    def statistic(self) -> Statistic:
         """Средняя статистика по корпусу"""
 
         if self.__changed:
             stats = []
             for text in self.texts:
                 stats.append(text.statistic)
-            self.__statistic = CorpusStatistic(stats, self.steps)
+            self.__statistic = Analyzer.average(stats, self.steps)
             self.__changed = False
         return self.__statistic
 
@@ -293,7 +356,21 @@ class Corpus:
         return self.__steps
 
     def add_text(self, text: Text) -> None:
-        """Добавляет текст в корпус"""
+        """
+        Добавляет текст в корпус.
+        
+        Параметры
+        ---------
+        text : `Text`
+            Текст для добавления
+        
+        Примеры
+        ------
+        ::
+
+            some_corpus.add_text(some_text)
+            some_corpus.add_text(text=some_text)
+        """
 
         self.__changed = True
         if text.steps == self.steps:
@@ -303,7 +380,25 @@ class Corpus:
                 f'Нельзя добавить {text.steps}-стопный текст {text.name} в {self.steps}-стопный корпус')
 
     def load_texts_from_directory(self, directory_path: str, year_filter: YearFilter | None = None) -> None:
-        """Загружает тексты из указанной директории в корпус"""
+        """
+        Загружает тексты из указанной директории в корпус.
+        Если передан фильтр, то тексты отбираются по нему, при этом важно, чтобы имена файлов содержали год.
+        
+        Параметры
+        ---------
+        directory_path : `str`
+            Путь к директории
+        year_filter : `YearFilter` ``(Опционально)``
+            Фильтр для отбора текстов
+        
+        Примеры
+        -------
+        ::
+
+            load_texts_from_directory('Фет')
+            load_texts_from_directory('Фет', year_filter)
+
+        """
 
         self.__changed = True
         for root, dirs, files in os.walk(f"{directory_path}"):
@@ -321,8 +416,24 @@ class Corpus:
         for text in self.texts:
             yield text
 
-    def add_texts_from_other_corpus_with_filter(self, corpus: Corpus, year_filter: YearFilter) -> None:
-        """Добавляет тексты из другого корпуса по фильтру"""
+    def add_texts_with_filter(self, corpus: Corpus, year_filter: YearFilter) -> None:
+        """
+        Добавляет тексты из другого корпуса по фильтру.
+        
+        Параметры
+        ---------
+        corpus : `Corpus`
+            Корпус, из которого отбираются тексты
+        year_filter : `YearFilter`
+            Фильтр, по которому осуществляется отбор
+        
+        Примеры
+        -------
+        ::
+
+            add_texts_with_filter(other_corpus, some_year_filter)
+            add_texts_with_filter(corpus=other_corpus, year_filter=some_year_filter)
+        """
 
         self.__changed = True
         for text in corpus.texts:
@@ -354,11 +465,28 @@ class Corpus:
             raise TypeError()
         return corpus
 
-    @classmethod
-    def create_new_with_filter(cls, corpus: Corpus, year_filter: YearFilter) -> Corpus:
-        """Создаёт корупус из текстов другого корпуса по фильтру"""
+    @staticmethod
+    def create_with_filter(corpus: Corpus, year_filter: YearFilter) -> Corpus:
+        """
+        Создаёт корупус из текстов другого корпуса по фильтру.
+        
+        Параметры
+        ---------
+        corpus : `Corpus`
+            Корпус, из которого отбираются тексты
+        year_filter : `YearFilter`
+            Фильтр, по которому отбираются тексты
+        
+        Примеры
+        -------
+        ::
 
-        new_corpus = cls(steps=corpus.steps)
+            Corpus.create_with_filter(some_corpus, some_year_filter)
+            Corpus.create_with_filter(corpus=some_corpus, year_filter=some_year_filter)
+
+        """
+
+        new_corpus = Corpus(steps=corpus.steps)
         for text in corpus.texts:
             if year_filter.min_year <= text.year <= year_filter.max_year:
                 new_corpus.add_text(text=text)
@@ -366,7 +494,30 @@ class Corpus:
 
 
 def delta(item_1: Text | Corpus, item_2: Text | Corpus) -> float:
-    """Дельта-расстояние между объектами типа Corpus или Text"""
+    """
+    Дельта-расстояние между объектами типа Corpus или Text
+    
+    Параметры
+    ---------
+    item_1 : `Text` или `Corpus`
+        Первый объект
+    item_2 : `Text` или `Corpus`
+        Второй объект
+
+    Возвращаемое значение
+    ---------------------
+
+    `float`
+        Дробное число, равное дельта-расстоянию между объектами.
+
+    Примеры
+    -------
+    ::
+
+        delta(text_1, text_2)
+        delta(text_1, corpus_1)
+        delta(corpus_1, corpus_2)
+    """
 
     if not isinstance(item_1, (Text, Corpus)) or not isinstance(item_2, (Text, Corpus)):
         raise TypeError(

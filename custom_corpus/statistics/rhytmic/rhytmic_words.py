@@ -1,23 +1,38 @@
+from __future__ import annotations
 from .utils import extract_vowels_with_accents
 import pandas as pd
-
+import re
+from ..utils import delete_empty_rows, shift_right
 
 class AccentPosition:
     """Результат анализа ударений на определенном слоге"""
 
-    def __init__(self, accent: int, part: float) -> None:
-        self.accent = accent
-        self.part = part
+    def __init__(self, accent: int, count: int, total_words_count: int) -> None:
+        self.__accent: int = accent
+        self.__count: int = count
+        self.__total_words_count = total_words_count
 
+    @property
+    def accent(self) -> int:
+        return self.__accent
+    
     def __str__(self) -> str:
-        return str(self.part)
+        return str(self.relative)
+
+    @property
+    def count(self) -> int:
+        return self.__count
+    
+    @property
+    def relative(self) -> float:
+        return round(self.__count / self.__total_words_count, 5)
 
 
 class RhythmicWord:
     """Результат анализа ритмических слов определенной длины."""
 
-    def __init__(self, length: int):
-        self.__accents: list[AccentPosition] = []
+    def __init__(self, length: int, accents: list[AccentPosition]):
+        self.__accents: list[AccentPosition] = accents
         self.length = length
 
     def _add_accent(self, accent: AccentPosition) -> None:
@@ -44,50 +59,74 @@ class RhythmicWord:
 class RhythmicWords:
     """Результат анализа ритмических слов"""
 
-    def __init__(self):
-        self._words :list[RhythmicWord] = []
+    def __init__(self, rhythmic_words: list[RhythmicWord]):
+        self.__words :list[RhythmicWord] = rhythmic_words
 
     def __str__(self) -> str:
-        return 'Ритмические слова:\n' + '\n'.join(str(rhytmic_word) for rhytmic_word in sorted(self._words, key=lambda x: x.length))
+        return 'Ритмические слова:\n\n' + shift_right('\n'.join(str(rhytmic_word) for rhytmic_word in self))
     
+    def __iter__(self):
+        for word in sorted(self.__words, key=lambda x: x.length):
+            yield word
+
     def __getitem__(self, key: int) -> RhythmicWord:
         """Слово определенной длины"""
 
-        for word in self._words:
+        for word in self:
             if word.length == key:
                 return word
-        raise KeyError
-
-    def _add_word(self, word: RhythmicWord) -> None:
-        """Добавляет ритмическое слово"""
-
-        self._words.append(word)
-
-    def __iter__(self):
-        for word in sorted(self._words, key=lambda x: x.length):
-            yield word
+        raise KeyError    
 
     def as_df(self) -> pd.DataFrame:
         """Pandas.DataFrame с данными"""
         data = []
-        for rhythmic_word in sorted(self._words,key=lambda x: x.length):
+        for rhythmic_word in self:
             for accent in rhythmic_word:
-                data.append([f'{rhythmic_word.length}.{accent.accent}', accent.part])
+                data.append([f'{rhythmic_word.length}.{accent.accent}', accent.relative])
         df = pd.DataFrame(data)
         df.columns = ['Тип слова', 'Доля']
         df.set_index('Тип слова', inplace=True)
         return df
 
 
-class TextRhythmicWords(RhythmicWords):
-    """Результат анализа ритмических слов"""
+class RhythmicWordsAnalyzer:
+    def __init__(self, type: str, arg: list[RhythmicWords] | str) -> None:
+        self.__type: str = type
+        self.__arg: list[RhythmicWords] | str = arg
     
-    def __init__(self, text: str):
-        super().__init__()
- 
+    @staticmethod
+    def text(text: str) -> RhythmicWordsAnalyzer:
+        return RhythmicWordsAnalyzer('text', arg=text)
+
+    @staticmethod
+    def average(stats: list[RhythmicWords]) -> RhythmicWordsAnalyzer:
+        return RhythmicWordsAnalyzer('average', stats)
+    
+    def analyze(self) -> RhythmicWords:
+        if self.__type == 'text':
+            stat = self.__text_analyze()
+        else:
+            stat = self.__average_analyze()
+        
+        rhythmic_words, total_words_count = stat
+        result: list[RhythmicWord] = []
+        for length in rhythmic_words:
+            accents: list[AccentPosition] = []
+            for accent_position in rhythmic_words[length]:
+                accents.append(AccentPosition(
+                    accent=accent_position, 
+                    count=rhythmic_words[length][accent_position], 
+                    total_words_count=total_words_count)
+                )
+            result.append(RhythmicWord(length=length, accents=accents))
+        return RhythmicWords(rhythmic_words=result)
+        
+
+    def __text_analyze(self) -> tuple[dict[int, dict[int, int]], int]:
+        text = delete_empty_rows(re.sub(r'\(.*\)', '', self.__arg))
         rhythmic_words = text.strip('|').split('|')
         stat : dict[int, dict[int, int]] = {}
-        count = len(rhythmic_words)
+        total_words_count = len(rhythmic_words)
 
         for rhythmic_word in rhythmic_words:
             vowels = extract_vowels_with_accents(rhythmic_word)
@@ -108,34 +147,21 @@ class TextRhythmicWords(RhythmicWords):
                     stat[syllables_count][accent_position] = 1
             else:
                 stat[syllables_count] = {accent_position: 1}
+        return (stat, total_words_count)
 
-        for length in stat.keys():
-            self._add_word(RhythmicWord(length=length))
-            for accent_position in stat[length].keys():
-                accent = AccentPosition(accent_position, round(stat[length][accent_position] / count, 5))
-                self._words[-1]._add_accent(accent=accent)
-
-
-class CorpusRhythmicWords(RhythmicWords):
-    """Результат анализа ритмических слов"""
-
-    def __init__(self, stats: list[TextRhythmicWords]):
-        super().__init__()
+    def __average_analyze(self) -> tuple[dict[int, dict[int, int]], int]:
+        total_words_count = 0
         stat = {}
-        count = len(stats)
-        for text_stat in stats:
+        for text_stat in self.__arg:
             for rhythmic_word in text_stat:
                 for accent in rhythmic_word:
+                    total_words_count += accent.count
                     if rhythmic_word.length in stat:
                         if accent.accent in stat[rhythmic_word.length]:
-                            stat[rhythmic_word.length][accent.accent] += accent.part
+                            stat[rhythmic_word.length][accent.accent] += accent.count
                         else:
-                            stat[rhythmic_word.length][accent.accent] = accent.part
+                            stat[rhythmic_word.length][accent.accent] = accent.count
                     else:
-                        stat[rhythmic_word.length] = {accent.accent: accent.part}
-
-        for length in stat.keys():
-            self._add_word(RhythmicWord(length=length))
-            for accent_position in stat[length].keys():
-                accent = AccentPosition(accent_position, round(stat[length][accent_position] / count, 5))
-                self._words[-1]._add_accent(accent=accent)
+                        stat[rhythmic_word.length] = {accent.accent: accent.count}
+        return (stat, total_words_count)
+    

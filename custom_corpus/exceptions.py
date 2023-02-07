@@ -1,4 +1,8 @@
+"""Модуль исключений"""
+
 class StepsException(Exception):
+    """Ошибка в количестве стоп"""
+    
     def __init__(self, *args) -> None:
         super().__init__(*args)
         if args:

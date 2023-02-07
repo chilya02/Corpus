@@ -1,74 +1,137 @@
-'''Сущности результатов анализа разных видов'''
+"""
+Пакет для работы со статистикой
 
-from .rhytmic import RhytmicStatistic, TextRhytmicStatistic, CorpusRhytmicStatistic
-from .morphological import MorphologicalStatistic, TextMorphologicalStatistic, CorpusMorphologicalStatistic
-from .lexical import LexicalStatistic, TextLexicalStatistic, CorpusLexicalStatistic
-from .graphical import GraphicalStatistic, TextGraphcalStatistic, CorpusGraphicalStatistic
+Классы:
+------
+`Statistic`
+    Статистика (родительский класс)
+`TextStatistic(Statistic)`
+    Статистика текста
+`CorpusStatistic(Statistic)`
+    Статистика корпуса
 
+Модули:
+-------
+`utils`
+    Утилиты для работы с текстом
+
+Пакеты:
+------
+`statistic.rhythmic`
+    Пакет для работы с ритмикой
+`statistic.lexical`
+    Пакет для работы с лексикой
+`statistic.morphological`
+    Пакет для работы с морфлогией
+`statistic.graphical`
+    Пакет для работы с графической информацией
+"""
+
+from .rhytmic import RhythmicStatistic, RhythmicAnalyzer
+from .morphological import MorphologicalStatistic, MorphologicalAnalyzer
+from .lexical import LexicalStatistic, LexicalAnalyzer
+from .graphical import GraphicalStatistic, GraphicalAnalyzer
+from .utils import shift_right
 
 class Statistic:
-    """Результат анализа"""
+    """Статистика
+    
+    Атрибуты
+    --------
 
-    def __init__(self) -> None:
-        self._rhythmic: RhytmicStatistic
-        self._morphological: MorphologicalStatistic
-        self._lexical: LexicalStatistic
-        self._graphical: GraphicalStatistic
+    rhythmic : `RhythmicStatistic`
+        Анализ ритмики
+    lexical : `LexicalStatistic`
+        Анализ лексики
+    morpholgical : `MorphologicalStatistic`
+        Анализ морфологии
+    graphical : `GraphicalStatistic`
+        Графический анализ
+    
+    Примеры
+    -------
+
+    Вывод объектов статистики:
+    
+        >>> print(text_or_corpus.statistic)
+        #Выведет всю статистику текста или корпуса
+        >>> print(text_or_corpus.statistic.rhythmic)
+        #Выведет только ритмическую статистику
+
+    Обращение к объектам статистики:
+
+        >>> text_or_corpus.statistic
+        <custom_corpus.statistics.Statistic at 0x7f4e98690c50>
+        >>> text_or_corpus.statistic.lexical
+        <custom_corpus.statistics.lexical.LexicalStatistic at 0x7f4e98969410> 
+    """
+
+    def __init__(
+            self, 
+            rhythmic: RhythmicStatistic,
+            lexical: LexicalStatistic, 
+            morphological: MorphologicalStatistic, 
+            graphical: GraphicalStatistic
+        ) -> None:
+        
+        self.__rhythmic: RhythmicStatistic = rhythmic
+        self.__morphological: MorphologicalStatistic = morphological
+        self.__lexical: LexicalStatistic = lexical
+        self.__graphical: GraphicalStatistic = graphical
 
     def __str__(self) -> str:
-        return 'Статистика:\n\n' + '\n\n'.join(map(str, (self.graphical, self.morphological, self.rhythmic, self.lexical)))
+        return 'Статистика:\n\n' + shift_right('\n\n'.join(map(str, (self.rhythmic, self.lexical, self.morphological, self.graphical))))
     
     @property
-    def rhythmic(self) -> RhytmicStatistic:
+    def rhythmic(self) -> RhythmicStatistic:
         """Ритмический анализ"""
 
-        return self._rhythmic
+        return self.__rhythmic
 
     @property
     def morphological(self) -> MorphologicalStatistic:
         """Морфологический анализ"""
 
-        return self._morphological
+        return self.__morphological
     
     @property
     def lexical(self) -> LexicalStatistic:
         """Лексический анализ"""
 
-        return self._lexical
+        return self.__lexical
     
     @property
     def graphical(self) -> GraphicalStatistic:
         """Графический анализ"""
 
-        return self._graphical
+        return self.__graphical
 
 
-class TextStatistic(Statistic):
-    """Результат анализа"""
+class Analyzer:
     
-    def __init__(self, text: str, steps: int) -> None:
-        super().__init__()
-        self._rhythmic = TextRhytmicStatistic(text=text, steps=steps)
-        self._morphological = TextMorphologicalStatistic(text=text)
-        self._lexical = TextLexicalStatistic(text=text)
-        self._graphical = TextGraphcalStatistic(text=text)
+    @staticmethod
+    def text(text: str, steps: int) -> Statistic:
+        return Statistic(
+            RhythmicAnalyzer.text(text, steps=steps),
+            LexicalAnalyzer.text(text=text),
+            MorphologicalAnalyzer.text(text=text),
+            GraphicalAnalyzer.text(text)
+        )
 
-
-class CorpusStatistic(Statistic):
-    """Результат анализа"""
-
-    def __init__(self, text_statistic_list: list[TextStatistic], steps: int) -> None:
-        super().__init__()
-        rhythmic_stats: list[TextRhytmicStatistic] = []
-        morphological_stats: list[TextMorphologicalStatistic] = []
-        lexical_stats: list[TextLexicalStatistic] = []
-        graphical_stats: list[TextGraphcalStatistic] = []
-        for stat in text_statistic_list:
+    @staticmethod
+    def average(stats: list[Statistic], steps: int) -> Statistic:
+        rhythmic_stats: list[RhythmicStatistic] = []
+        morphological_stats: list[MorphologicalStatistic] = []
+        lexical_stats: list[LexicalStatistic] = []
+        graphical_stats: list[GraphicalStatistic] = []
+        for stat in stats:
             rhythmic_stats.append(stat.rhythmic)
             morphological_stats.append(stat.morphological)
             lexical_stats.append(stat.lexical)
             graphical_stats.append(stat.graphical)
-        self._rhythmic = CorpusRhytmicStatistic(stats=rhythmic_stats, steps=steps)
-        self._morphological = CorpusMorphologicalStatistic(stats=morphological_stats)
-        self._lexical = CorpusLexicalStatistic(stats=lexical_stats)
-        self._graphical = CorpusGraphicalStatistic(stats=graphical_stats)
+        return Statistic(
+            RhythmicAnalyzer.average(rhythmic_stats, steps=steps),
+            LexicalAnalyzer.average(lexical_stats),
+            MorphologicalAnalyzer.average(morphological_stats),
+            GraphicalAnalyzer.average(graphical_stats)
+        )

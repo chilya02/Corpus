@@ -1,5 +1,6 @@
 from .POS_stat import PosStat, Verb
 import pandas as pd
+from ..utils import shift_right
 
 class VerbsTenseStat:
     def __init__(self) -> None:
@@ -41,7 +42,7 @@ class VerbsTensesStat:
         total_words_count = 0
 
         try:
-            verbs: list[Verb] = stat['VERB'].tokens
+            verbs: list[Verb] = list(stat['VERB'])
             for verb in verbs:
                 if verb.form == 'Inf':
                     self.__inf.add_word(verb)
@@ -61,7 +62,7 @@ class VerbsTensesStat:
             self.__data[tense].total_words_count = total_words_count       
     
     def __str__(self) -> str:
-        return 'Статистика по временам глагольных частей речи:\n' + '\n'.join(f'{name}\t{stat.count}\t{stat.relative}' for name, stat in self.__data.items())
+        return 'Статистика по временам глагольных частей речи:\n\n' + shift_right('\n'.join(f'{name}\t{stat.count}\t{stat.relative}' for name, stat in self.__data.items()))
         
     def as_df(self) -> pd.DataFrame:
         df = pd.DataFrame([name, stat.count, stat.relative] for name, stat in self.__data.items())
