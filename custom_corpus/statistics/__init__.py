@@ -3,12 +3,10 @@
 
 Классы:
 ------
+`Analyzer`
+    Анализатор текстов с возможностью усреднения статистик нескольких текстов
 `Statistic`
-    Статистика (родительский класс)
-`TextStatistic(Statistic)`
-    Статистика текста
-`CorpusStatistic(Statistic)`
-    Статистика корпуса
+    Статистика (результат анализа)
 
 Модули:
 -------
@@ -17,13 +15,13 @@
 
 Пакеты:
 ------
-`statistic.rhythmic`
+`rhythmic`
     Пакет для работы с ритмикой
-`statistic.lexical`
+`lexical`
     Пакет для работы с лексикой
-`statistic.morphological`
+`morphological`
     Пакет для работы с морфлогией
-`statistic.graphical`
+`graphical`
     Пакет для работы с графической информацией
 """
 
@@ -108,9 +106,40 @@ class Statistic:
 
 
 class Analyzer:
+    """Анализатор
+    
+    Методы
+    ------
+
+    Анализ текста:
+    
+    >>> Analyzer.text(text)
+    <custom_corpus.statistics.Statistic at 0x7f4e98690c50>
+
+    Усреднение статистик:
+
+    >>> Analyzer.average(list_of_statistic)
+    <custom_corpus.statistics.Statistic at 0x7f4e98690c50>
+    """
     
     @staticmethod
     def text(text: str, steps: int) -> Statistic:
+        """Выполняет полный анализ текста.
+        
+        Параметры
+        ---------
+        text : `str`
+            Исходный текст
+        steps: `int`
+            Количество стоп в тексте
+        
+        Возвращаемое значение
+        ---------------------
+
+        `Statistic`
+            Статистика по всем результатам анализа текста.
+        """
+
         return Statistic(
             RhythmicAnalyzer.text(text, steps=steps),
             LexicalAnalyzer.text(text=text),
@@ -120,6 +149,22 @@ class Analyzer:
 
     @staticmethod
     def average(stats: list[Statistic], steps: int) -> Statistic:
+        """Выполняет усреднение всех статистик.
+        
+        Параметры
+        ---------
+        stats : `list of Statistic`
+            Статистики для усреднения
+        steps: `int`
+            Количество стоп в текстах
+        
+        Возвращаемое значение
+        ---------------------
+
+        `Statistic`
+            Средняя статистика по результатам всех анализов.
+        """
+
         rhythmic_stats: list[RhythmicStatistic] = []
         morphological_stats: list[MorphologicalStatistic] = []
         lexical_stats: list[LexicalStatistic] = []
