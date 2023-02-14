@@ -1,3 +1,21 @@
+"""
+Пакет для работы с ритмической статистикой
+
+Классы:
+-------
+`RhythmicAnalyzer`
+    Ритмический анализатор с возможностью усреднения статистик нескольких текстов
+`RhythmicStatistic`
+    Ритмическая статистика (результат анализа)
+
+Модули:
+`rhythmic_words`
+    Модуль для работы с ритмическими словами
+`stressness_profile`
+    Модуль для работы с профилем ударности
+"""
+
+
 from .stressness_profile import StressnessProfile, StressnessProfileAnalyzer
 from .rhytmic_words import RhythmicWords, RhythmicWordsAnalyzer
 from ..utils import shift_right

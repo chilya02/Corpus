@@ -1,3 +1,25 @@
+"""
+Пакет для работы с морфологической статистикой.
+
+Классы:
+------
+
+`MorphologicalAnalyzer`
+    Морфологический анализатор с возможностью усреднения статистик нескольких текстов. 
+`MorphologicalStatistic`
+    Морфологическая статистика (результат анализа)
+
+Модули:
+------
+
+`POS_stat`
+    Модуль для работы с частями речи
+`verbs_tense`
+    Модуль для работы с глаголами
+
+"""
+
+
 from .POS_stat import PosStat, PosAnalyzer
 from progress.bar import IncrementalBar
 from .verbs_tense import VerbsTensesStat
@@ -25,9 +47,6 @@ class MorphologicalStatistic:
         return 'Морфологический анализ:\n\n' + shift_right('\n\n'.join(map(str, (self.POS, self.verbs_tenses))))
 
 class MorphologicalAnalyzer:
-
-    def __init__(self) -> None:
-        pass
     
     @staticmethod
     def text(text: str) -> MorphologicalStatistic:
