@@ -1,6 +1,24 @@
+"""
+Пакет для работы с лексической статистикой.
+
+Классы:
+------
+`LexicalAnalyzer`
+    Лексический анализатор с возможностью усреднения статистик нескольких текстов. 
+`LexicalStatistic`
+    Лексическая статистика (результат анализа)
+
+Модули:
+-------
+`words_frequency`
+    Модуль для работы с частотной статистикой слов.
+"""
+
+
+
 from __future__ import annotations
 from .words_frequency import FrequencyStatistic, WordsFreqAnalyzer
-from ..utils import delete_empty_rows
+from ..utils import shift_right
 
 class LexicalAnalyzer:
     def __init__(self) -> None:
@@ -30,4 +48,4 @@ class LexicalStatistic:
         return self.__frequency_stat
 
     def __str__(self) -> str:
-        return 'Лексический анализ:\n\n' + '\n\n'.join(map(str, (self.words_freq,)))
+        return 'Лексический анализ:\n\n' + shift_right('\n\n'.join(map(str, (self.words_freq,))))

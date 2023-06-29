@@ -1,3 +1,18 @@
+"""
+Модуль для работы с частотной статистикой слов
+
+Классы:
+------
+
+`WordStat`
+    Статистика по слову
+`FrequencyStatistic`
+    Частотная статистика по слову
+`WordsFreqAnalyzer`
+    Частотный анализатор
+"""
+
+
 from __future__ import annotations
 import re
 import pandas as pd
