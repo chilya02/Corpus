@@ -39,12 +39,14 @@ python -m spacy download ru_core_news_lg
 ## Использование 
 ### Анализируемые объекты
 #### Текст
-Создание
+##### Создание
+Синтаксис
+`some_text = Text('<путь>', <количество стоп>, '<название>', <год>)`
+
 ```python 
 from custom_corpus import Text
 
 #Загрузка текста
-some_text = Text('<путь>', <количество стоп>, '<название>', <год>)
 
 #Примеры
 text_1 = Text('Dubia.txt', 4, 'Дубия', 1817)
@@ -61,12 +63,21 @@ text_4 = Text(path='F_1857_16_Прибой.txt', steps=4)
 >>> some_text.name      #Название текста
 ```
 #### Корпус
+Создание
 ```python
-from
+from custom_corpus import Corpus
+
 #Загрузка корпуса текстов
 some_corpus = Corpus(<количество стоп>)
 some_corpus.load_texts_from_directory(<путь>)
 
+
+```
+Получение данных
+```python
+>>> some_corpus.statistic
+>>> some_corpus.texts
+>>> some_corpus.steps
 ```
 ### Статистики объектов
 ```python
