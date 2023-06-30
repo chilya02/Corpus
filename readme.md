@@ -89,8 +89,20 @@ corpus_3 = text_1 + text_2
 >>> some_corpus.texts       #Список текстов
 >>> some_corpus.steps       #Количество стоп в текстах корпуса
 ```
+---
 ### Статистики объектов
 ```python
-#Получение статистики
-some_text_or_corpus.statistic
+#Вернёт объект типа custom_corpus.statistic.Statistic
+>>> some_text_or_corpus.statistic
+
+#Выведет всю статистику в текстовом формате
+>>> print(some_text_or_corpus.statistic)
 ```
+#### Ритмическая статистика
+
+#### Лексическая статистика
+
+#### Графическая статистика
+
+#### Морфологическая статистика
+
