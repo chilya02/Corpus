@@ -165,6 +165,18 @@ corpus_3 = text_1 + text_2
 ```
 ---
 #### Графическая статистика
+```python
+#Вернёт объект типа custom_corpus.statistic.graphical.GraphicalStatistic
+>>> some_text_or_corpus.statistic.graphical
+
+#Выведет графическую статистику в текстовом формате
+>>> print(some_text_or_corpus.statistic.graphical)
+```
+#### Средняя длина слов
+```python
+#Вернёт объект типа float
+>>> some_text_or_corpus.statistic.graphical.average_words_length
+```
 ---
 #### Морфологическая статистика
 
