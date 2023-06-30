@@ -39,8 +39,6 @@ python -m spacy download ru_core_news_lg
 ## Использование 
 ### Анализируемые объекты
 #### Текст
-Создание
-
 Синтаксис: `some_text = Text('<путь>', <количество стоп>, '<название>', <год>)`
 
 Примеры:
@@ -61,21 +59,23 @@ text_4 = Text(path='F_1857_16_Прибой.txt', steps=4)
 >>> some_text.name      #Название текста
 ```
 #### Корпус
-Создание
+Синтаксис: 
+```
+some_corpus = Corpus(<количество стоп>)
+some_corpus.load_texts_from_directory(<путь>)
+```
+
+Примеры:
 ```python
 from custom_corpus import Corpus
 
 #Загрузка корпуса текстов
-some_corpus = Corpus(<количество стоп>)
-some_corpus.load_texts_from_directory(<путь>)
-
-
 ```
 Получение данных
 ```python
->>> some_corpus.statistic
->>> some_corpus.texts
->>> some_corpus.steps
+>>> some_corpus.statistic   #Статистика всех текстов куорпуса
+>>> some_corpus.texts       #Список текстов
+>>> some_corpus.steps       #Количество стоп в текстах корпуса
 ```
 ### Статистики объектов
 ```python
