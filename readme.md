@@ -145,6 +145,24 @@ corpus_3 = text_1 + text_2
 ```
 ---
 #### Лексическая статистика
+```python
+#Вернёт объект типа custom_corpus.statistic.lexical.LexicalStatistic
+>>> some_text_or_corpus.statistic.lexical
+
+#Выведет лексическую статистику в текстовом формате
+>>> print(some_text_or_corpus.statistic.lexical)
+```
+#### Частотный словарь 
+```python
+#Вернёт объект типа custom_corpus.statistic.lexical.FrequencyStatistic
+>>> some_text_or_corpus.statistic.lexical.words_freq
+
+#Вернёт объект типа Pandas.DataFrame с результатами анализа
+>>> some_text_or_corpus.statistic.lexical.words_freq.as_df()
+
+#Выведет частотный словарь в текстовом формате
+>>> print(some_text_or_corpus.statistic.lexical.words_freq)
+```
 ---
 #### Графическая статистика
 ---
