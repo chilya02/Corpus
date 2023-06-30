@@ -38,12 +38,31 @@ python -m spacy download ru_core_news_lg
 ```
 ## Использование 
 ### Анализируемые объекты
+##### Текст
+Создание
 ```python 
-from custom_corpus import Text, Corpus
+from custom_corpus import Text
 
 #Загрузка текста
 some_text = Text('<путь>', <количество стоп>, '<название>', <год>)
 
+#Примеры
+text_1 = Text('Dubia.txt', 4, 'Дубия', 1817)
+text_2 = Text(path='Dubia.txt', steps=4, name='Дубия', year=1817)
+text_3 = Text('F_1857_16_Прибой.txt', 4)
+text_4 = Text(path='F_1857_16_Прибой.txt', steps=4)
+```
+Получение данных
+```python
+>>> some_text.statistic #Статистика текста
+>>> some_text.text      #Непосредственно текст
+>>> some_text.steps     #Количество стоп в тексте
+>>> some_text.year      #Год написания текста
+>>> sone_text.name      #Название текста
+```
+##### Корпус
+```python
+from
 #Загрузка корпуса текстов
 some_corpus = Corpus(<количество стоп>)
 some_corpus.load_texts_from_directory(<путь>)
