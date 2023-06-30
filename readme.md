@@ -39,8 +39,10 @@ python -m spacy download ru_core_news_lg
 ## Использование 
 ### Анализируемые объекты
 #### Текст
-Синтаксис: `some_text = Text('<путь>', <количество стоп>, '<название>', <год>)`
-
+Синтаксис: 
+``` 
+some_text = Text('<путь>', <количество стоп>, '<название>', <год>)
+```
 Примеры:
 ```python 
 from custom_corpus import Text
@@ -67,9 +69,19 @@ some_corpus.load_texts_from_directory(<путь>)
 
 Примеры:
 ```python
-from custom_corpus import Corpus
+from custom_corpus import Corpus, YearFilter
 
-#Загрузка корпуса текстов
+#Загрузка из папки
+corpus_1 = Corpus(5)
+corpus_1.load_texts_from_directory('Фет')
+
+#Загрузка из папки с фильтром 
+corpus_2 = Corpus(5)
+year_filter = YearFilter(1845, 1859)
+corpus_2.load_texts_from_directory('Фет', year_filter)
+
+#Объединение нескольких текстов
+corpus_3 = text_1 + text_2
 ```
 Получение данных
 ```python
