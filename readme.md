@@ -99,10 +99,36 @@ corpus_3 = text_1 + text_2
 >>> print(some_text_or_corpus.statistic)
 ```
 #### Ритмическая статистика
+```python
+#Вернёт объект типа custom_corpus.statistic.rhythmic.RhythmicStatistic
+>>> some_text_or_corpus.statistic.rhythmic
+
+#Выведет ритмическую статистику в текстовом формате
+>>> print(some_text_or_corpus.statistic.rhythmic)
+```
+---
+#### Ритмические слова
+```python 
+
+#Вернёт объект типа custom_corpus.statistic.rhythmic.RhythmicWords
+>>> some_text_or_corpus.statistic.rhythmic.rhythmic_words
+
+#Вернёт объект типа Pandas.DataFrame с результатами анализа
+>>> some_text_or_corpus.statistic.rhythmic.rhythmic_words.as_df()
+
+#Вернёт объект типа custom_corpus.statistic.rhythmic.RhythmicWord - статистика по слову определённой длины (2)
+>>> some_text_or_corpus.statistic.rhythmic.rhythmic_words[2]
+
+#Выведет статистику ритмических слов в текстовом формате
+>>> print(some_text_or_corpus.statistic.rhythmic.rhythmic_words)
+
+#Выведет статистику ритмического слова из двух слогов в текстовом формате
+>>> print(some_text_or_corpus.statistic.rhythmic.rhythmic_words[2])
+```
 
 #### Лексическая статистика
-
+---
 #### Графическая статистика
-
+---
 #### Морфологическая статистика
 
