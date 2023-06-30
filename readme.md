@@ -20,8 +20,6 @@ Corpus - небольшая библиотека, написанная на Pyth
         * [Морфологическая статистика](#Морфологическая-статистика)
             * [Статистика по частям речи](#Статистика-по-частям-речи)
 
-
-
 ## Установка
 ### Загрузка исходного кода
 Linux:
@@ -179,4 +177,22 @@ corpus_3 = text_1 + text_2
 ```
 ---
 #### Морфологическая статистика
+```python
+#Вернёт объект типа custom_corpus.statistic.morphological.MorphologicalStatistic
+>>> some_text_or_corpus.statistic.morphological
 
+#Выведет морфологическую статистику в текстовом формате
+>>> print(some_text_or_corpus.statistic.morphological)
+```
+#### Статистика по частям речи 
+```python
+#Вернёт объект типа custom_corpus.statistic.morphological.POS
+>>> some_text_or_corpus.statistic.morphological.POS
+
+#Вернёт объект типа Pandas.DataFrame с результатами анализа
+>>> some_text_or_corpus.statistic.morphological.POS.as_df()
+
+#Выведет статистику по частям речи в текстовом формате
+>>> print(some_text_or_corpus.statistic.morphological.POS)
+```
+---
