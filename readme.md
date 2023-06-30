@@ -40,15 +40,11 @@ python -m spacy download ru_core_news_lg
 ### Анализируемые объекты
 #### Текст
 ##### Создание
-Синтаксис
-`some_text = Text('<путь>', <количество стоп>, '<название>', <год>)`
-
+Синтаксис: `some_text = Text('<путь>', <количество стоп>, '<название>', <год>)`
+Примеры:
 ```python 
 from custom_corpus import Text
 
-#Загрузка текста
-
-#Примеры
 text_1 = Text('Dubia.txt', 4, 'Дубия', 1817)
 text_2 = Text(path='Dubia.txt', steps=4, name='Дубия', year=1817)
 text_3 = Text('F_1857_16_Прибой.txt', 4)
