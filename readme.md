@@ -116,7 +116,7 @@ corpus_3 = text_1 + text_2
 #Вернёт объект типа Pandas.DataFrame с результатами анализа
 >>> some_text_or_corpus.statistic.rhythmic.rhythmic_words.as_df()
 
-#Вернёт объект типа custom_corpus.statistic.rhythmic.RhythmicWord - статистика по слову определённой длины (2)
+#Вернёт объект типа custom_corpus.statistic.rhythmic.RhythmicWord - статистика по слову из 2 слогов
 >>> some_text_or_corpus.statistic.rhythmic.rhythmic_words[2]
 
 #Выведет статистику ритмических слов в текстовом формате
