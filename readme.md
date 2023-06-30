@@ -41,6 +41,7 @@ python -m spacy download ru_core_news_lg
 #### Текст
 ##### Создание
 Синтаксис: `some_text = Text('<путь>', <количество стоп>, '<название>', <год>)`
+
 Примеры:
 ```python 
 from custom_corpus import Text
