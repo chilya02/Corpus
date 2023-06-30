@@ -106,7 +106,6 @@ corpus_3 = text_1 + text_2
 #Выведет ритмическую статистику в текстовом формате
 >>> print(some_text_or_corpus.statistic.rhythmic)
 ```
----
 #### Ритмические слова
 ```python 
 
@@ -125,7 +124,26 @@ corpus_3 = text_1 + text_2
 #Выведет статистику ритмического слова из двух слогов в текстовом формате
 >>> print(some_text_or_corpus.statistic.rhythmic.rhythmic_words[2])
 ```
+#### Профиль ударности 
+```python 
 
+#Вернёт объект типа custom_corpus.statistic.rhythmic.StressnessProfile
+>>> some_text_or_corpus.statistic.rhythmic.stressness_profile
+
+#Вернёт объект типа Pandas.DataFrame с результатами анализа
+>>> some_text_or_corpus.statistic.rhythmic.stressness_profile.as_df()
+
+#Вернёт объект типа custom_corpus.statistic.rhythmic.Ikt - статистика по ударению на 2 икт
+>>> some_text_or_corpus.statistic.rhythmic.stressness_profile[2]
+
+#Выведет статистику профиля ударности в текстовом формате
+>>> print(some_text_or_corpus.statistic.rhythmic.stressness_profile)
+
+#Выведет долю строк с ударением на 2 икт относительно общего количества
+>>> print(some_text_or_corpus.statistic.rhythmic.stressness_profile[2])
+
+```
+---
 #### Лексическая статистика
 ---
 #### Графическая статистика
