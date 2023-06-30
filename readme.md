@@ -38,7 +38,7 @@ python -m spacy download ru_core_news_lg
 ```
 ## Использование 
 ### Анализируемые объекты
-##### Текст
+#### Текст
 Создание
 ```python 
 from custom_corpus import Text
@@ -58,9 +58,9 @@ text_4 = Text(path='F_1857_16_Прибой.txt', steps=4)
 >>> some_text.text      #Непосредственно текст
 >>> some_text.steps     #Количество стоп в тексте
 >>> some_text.year      #Год написания текста
->>> sone_text.name      #Название текста
+>>> some_text.name      #Название текста
 ```
-##### Корпус
+#### Корпус
 ```python
 from
 #Загрузка корпуса текстов
